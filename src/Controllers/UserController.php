@@ -22,7 +22,11 @@ class UserController extends Controller
         return $content
             ->header(trans('admin.administrator'))
             ->description(trans('admin.list'))
-            ->body($this->grid()->render());
+            ->body($this->grid()->render())
+            ->breadcrumb(
+                ['text' => 'Usuários'],
+                ['text' => 'Listando']
+            );
     }
 
     /**
@@ -38,7 +42,12 @@ class UserController extends Controller
         return $content
             ->header(trans('admin.administrator'))
             ->description(trans('admin.detail'))
-            ->body($this->detail($id));
+            ->body($this->detail($id))
+            ->breadcrumb(
+                ['text' => 'Usuários', 'url' => '/auth/users'],
+                ['text' => 'Visualizando'],
+                ['text' => $id]
+            );
     }
 
     /**
@@ -53,7 +62,12 @@ class UserController extends Controller
         return $content
             ->header(trans('admin.administrator'))
             ->description(trans('admin.edit'))
-            ->body($this->form()->edit($id));
+            ->body($this->form()->edit($id))
+            ->breadcrumb(
+                ['text' => 'Usuários', 'url' => '/auth/users'],
+                ['text' => 'Editando'],
+                ['text' => $id]
+            );
     }
 
     /**
@@ -66,7 +80,11 @@ class UserController extends Controller
         return $content
             ->header(trans('admin.administrator'))
             ->description(trans('admin.create'))
-            ->body($this->form());
+            ->body($this->form())
+            ->breadcrumb(
+                ['text' => 'Usuários', 'url' => '/auth/users'],
+                ['text' => 'Novo']
+            );
     }
 
     /**
@@ -84,14 +102,17 @@ class UserController extends Controller
         $grid->username(trans('admin.username'));
         $grid->name(trans('admin.name'));
         $grid->roles(trans('admin.roles'))->pluck('name')->label();
-        $grid->created_at(trans('admin.created_at'));
-        $grid->updated_at(trans('admin.updated_at'));
-
-        $grid->actions(function (Grid\Displayers\Actions $actions) {
-            if ($actions->getKey() == 1) {
-                $actions->disableDelete();
+        $grid->column('created_at', trans('admin.created_at'))->display(function () {
+            if(!empty($this->created_at)){
+                return $this->created_at->format('d/m/Y H:i:s');
             }
-        });
+        })->sortable();
+
+        $grid->column('updated_at', trans('admin.updated_at'))->display(function () {
+            if(!empty($this->updated_at)){
+                return $this->updated_at->format('d/m/Y H:i:s');
+            }
+        })->sortable();
 
         $grid->tools(function (Grid\Tools $tools) {
             $tools->batch(function (Grid\Tools\BatchActions $actions) {
@@ -124,8 +145,16 @@ class UserController extends Controller
         $show->permissions(trans('admin.permissions'))->as(function ($permission) {
             return $permission->pluck('name');
         })->label();
-        $show->created_at(trans('admin.created_at'));
-        $show->updated_at(trans('admin.updated_at'));
+        $show->created_at()->as(function ($created_at) {
+            if(!empty($created_at)) {
+                return $created_at->format('d/m/Y H:i:s');
+            }
+        });
+        $show->updated_at()->as(function ($updated_at) {
+            if(!empty($updated_at)) {
+                return $updated_at->format('d/m/Y H:i:s');
+            }
+        });
 
         return $show;
     }

@@ -302,6 +302,7 @@ return [
     */
     'extension_dir' => app_path('Admin/Extensions'),
 
+    'footer_text' => 'Powered by <a href="https://github.com/z-song/laravel-admin" target="_blank">laravel-admin</a>',
     /*
     |--------------------------------------------------------------------------
     | Settings for extensions.

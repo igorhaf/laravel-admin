@@ -25,6 +25,10 @@ class PermissionController extends Controller
         return $content
             ->header(trans('admin.permissions'))
             ->description(trans('admin.list'))
+            ->breadcrumb(
+                ['text' => 'Permissões' , 'url' => 'auth/permissions'],
+                ['text' => 'Listando']
+            )
             ->body($this->grid()->render());
     }
 
@@ -41,6 +45,11 @@ class PermissionController extends Controller
         return $content
             ->header(trans('admin.permissions'))
             ->description(trans('admin.detail'))
+            ->breadcrumb(
+                ['text' => 'Permissões' , 'url' => 'auth/permissions'],
+                ['text' => 'Visualizar'],
+                ['text' => $id]
+            )
             ->body($this->detail($id));
     }
 
@@ -57,6 +66,11 @@ class PermissionController extends Controller
         return $content
             ->header(trans('admin.permissions'))
             ->description(trans('admin.edit'))
+            ->breadcrumb(
+                ['text' => 'Permissões' , 'url' => 'auth/permissions'],
+                ['text' => 'Editando'],
+                ['text' => $id]
+            )
             ->body($this->form()->edit($id));
     }
 
@@ -72,6 +86,10 @@ class PermissionController extends Controller
         return $content
             ->header(trans('admin.permissions'))
             ->description(trans('admin.create'))
+            ->breadcrumb(
+                ['text' => 'Permissões' , 'url' => 'auth/permissions'],
+                ['text' => 'Nova']
+            )
             ->body($this->form());
     }
 
@@ -113,8 +131,17 @@ class PermissionController extends Controller
             })->implode('');
         });
 
-        $grid->created_at(trans('admin.created_at'));
-        $grid->updated_at(trans('admin.updated_at'));
+        $grid->column('created_at', trans('admin.created_at'))->display(function () {
+            if(!empty($this->created_at)){
+                return $this->created_at->format('d/m/Y H:i:s');
+            }
+        })->sortable();
+
+        $grid->column('updated_at', trans('admin.updated_at'))->display(function () {
+            if(!empty($this->updated_at)){
+                return $this->updated_at->format('d/m/Y H:i:s');
+            }
+        })->sortable();
 
         $grid->tools(function (Grid\Tools $tools) {
             $tools->batch(function (Grid\Tools\BatchActions $actions) {
@@ -165,8 +192,16 @@ class PermissionController extends Controller
             })->implode('');
         });
 
-        $show->created_at(trans('admin.created_at'));
-        $show->updated_at(trans('admin.updated_at'));
+        $show->created_at()->as(function ($created_at) {
+            if(!empty($created_at)) {
+                return $created_at->format('d/m/Y H:i:s');
+            }
+        });
+        $show->updated_at()->as(function ($updated_at) {
+            if(!empty($updated_at)) {
+                return $updated_at->format('d/m/Y H:i:s');
+            }
+        });
 
         return $show;
     }

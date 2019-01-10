@@ -21,7 +21,10 @@ class LogController extends Controller
         return $content
             ->header(trans('admin.operation_log'))
             ->description(trans('admin.list'))
-            ->body($this->grid());
+            ->body($this->grid())->breadcrumb(
+                ['text' => 'Log de Operações', 'url' => 'auth/logs'],
+                ['text' => 'Listando']
+            );
     }
 
     /**
@@ -34,15 +37,15 @@ class LogController extends Controller
         $grid->model()->orderBy('id', 'DESC');
 
         $grid->id('ID')->sortable();
-        $grid->user()->name('User');
-        $grid->method()->display(function ($method) {
+        $grid->user()->name('Usuário');
+        $grid->method('Método')->display(function ($method) {
             $color = array_get(OperationLog::$methodColors, $method, 'grey');
 
             return "<span class=\"badge bg-$color\">$method</span>";
         });
-        $grid->path()->label('info');
+        $grid->path('Caminho')->label('info');
         $grid->ip()->label('primary');
-        $grid->input()->display(function ($input) {
+        $grid->input('Parâmetros')->display(function ($input) {
             $input = json_decode($input, true);
             $input = array_except($input, ['_pjax', '_token', '_method', '_previous_']);
             if (empty($input)) {

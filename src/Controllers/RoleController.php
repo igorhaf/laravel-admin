@@ -24,6 +24,10 @@ class RoleController extends Controller
         return $content
             ->header(trans('admin.roles'))
             ->description(trans('admin.list'))
+            ->breadcrumb(
+                ['text' => 'Papeis' , 'url' => 'auth/roles'],
+                ['text' => 'Listando']
+            )
             ->body($this->grid()->render());
     }
 
@@ -40,6 +44,11 @@ class RoleController extends Controller
         return $content
             ->header(trans('admin.roles'))
             ->description(trans('admin.detail'))
+            ->breadcrumb(
+                ['text' => 'Papeis' , 'url' => 'auth/roles'],
+                ['text' => 'Visualizando'],
+                ['text' => $id]
+            )
             ->body($this->detail($id));
     }
 
@@ -56,6 +65,11 @@ class RoleController extends Controller
         return $content
             ->header(trans('admin.roles'))
             ->description(trans('admin.edit'))
+            ->breadcrumb(
+                ['text' => 'Papeis' , 'url' => 'auth/roles'],
+                ['text' => 'Editando'],
+                ['text' => $id]
+            )
             ->body($this->form()->edit($id));
     }
 
@@ -71,6 +85,10 @@ class RoleController extends Controller
         return $content
             ->header(trans('admin.roles'))
             ->description(trans('admin.create'))
+            ->breadcrumb(
+                ['text' => 'Papeis' , 'url' => 'auth/roles'],
+                ['text' => 'Novo']
+            )
             ->body($this->form());
     }
 
@@ -91,8 +109,17 @@ class RoleController extends Controller
 
         $grid->permissions(trans('admin.permission'))->pluck('name')->label();
 
-        $grid->created_at(trans('admin.created_at'));
-        $grid->updated_at(trans('admin.updated_at'));
+        $grid->column('created_at', trans('admin.created_at'))->display(function () {
+            if(!empty($this->created_at)){
+                return $this->created_at->format('d/m/Y H:i:s');
+            }
+        })->sortable();
+
+        $grid->column('updated_at', trans('admin.updated_at'))->display(function () {
+            if(!empty($this->updated_at)){
+                return $this->updated_at->format('d/m/Y H:i:s');
+            }
+        })->sortable();
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             if ($actions->row->slug == 'administrator') {
@@ -128,9 +155,16 @@ class RoleController extends Controller
         $show->permissions(trans('admin.permissions'))->as(function ($permission) {
             return $permission->pluck('name');
         })->label();
-        $show->created_at(trans('admin.created_at'));
-        $show->updated_at(trans('admin.updated_at'));
-
+        $show->created_at()->as(function ($created_at) {
+            if(!empty($created_at)) {
+                return $created_at->format('d/m/Y H:i:s');
+            }
+        });
+        $show->updated_at()->as(function ($updated_at) {
+            if(!empty($updated_at)) {
+                return $updated_at->format('d/m/Y H:i:s');
+            }
+        });
         return $show;
     }
 

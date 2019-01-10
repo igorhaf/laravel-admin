@@ -21,12 +21,16 @@
                     </li>
                 @else
                 <li>
-                    <a href="{{ admin_url(array_get($item, 'url')) }}">
+                    @if(array_get($item, 'url'))
+                        <a href="{{ admin_url(array_get($item, 'url')) }}">
+                        @endif
                         @if (array_has($item, 'icon'))
                             <i class="fa fa-{{ $item['icon'] }}"></i>
                         @endif
                         {{ $item['text'] }}
-                    </a>
+                    @if(array_get($item, 'url'))
+                        </a>
+                    @endif
                 </li>
                 @endif
             @endforeach

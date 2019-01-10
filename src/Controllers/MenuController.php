@@ -26,6 +26,10 @@ class MenuController extends Controller
         return $content
             ->header(trans('admin.menu'))
             ->description(trans('admin.list'))
+            ->breadcrumb(
+                ['text' => 'Menus'],
+                ['text' => 'Configuração']
+            )
             ->row(function (Row $row) {
                 $row->column(6, $this->treeView()->render());
 
@@ -105,7 +109,12 @@ class MenuController extends Controller
         return $content
             ->header(trans('admin.menu'))
             ->description(trans('admin.edit'))
-            ->row($this->form()->edit($id));
+            ->row($this->form()->edit($id))
+            ->breadcrumb(
+                ['text' => 'Menus' , 'url' => 'auth/menu'],
+                ['text' => 'Editando'],
+                ['text' => $id]
+            );
     }
 
     /**
