@@ -343,7 +343,7 @@ class Form implements Renderable
      *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\Http\JsonResponse
      */
-    public function store()
+    public function store($toast = true, $redirect = true)
     {
         $data = Input::all();
 
@@ -375,8 +375,8 @@ class Form implements Renderable
         if ($response = $this->ajaxResponse(trans('admin.save_succeeded'))) {
             return $response;
         }
+        return $this->redirectAfterStore($toast, $redirect);
 
-        return $this->redirectAfterStore();
     }
 
     /**
@@ -524,7 +524,7 @@ class Form implements Renderable
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function update($id, $data = null)
+    public function update($id, $data = null, $toast = true, $redirect = true)
     {
         $data = ($data) ?: Input::all();
 
@@ -535,10 +535,10 @@ class Form implements Renderable
         $data = $this->handleFileDelete($data);
 
         if ($this->handleOrderable($id, $data)) {
-            return response([
-                'status'  => true,
-                'message' => trans('admin.update_succeeded'),
-            ]);
+                return response([
+                    'status' => true,
+                    'message' => trans('admin.update_succeeded'),
+                ]);
         }
 
         /* @var Model $this->model */
@@ -579,8 +579,8 @@ class Form implements Renderable
         if ($response = $this->ajaxResponse(trans('admin.update_succeeded'))) {
             return $response;
         }
+        return $this->redirectAfterUpdate($id, $toast, $redirect);
 
-        return $this->redirectAfterUpdate($id);
     }
 
     /**
@@ -588,13 +588,13 @@ class Form implements Renderable
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    protected function redirectAfterStore()
+    protected function redirectAfterStore($toast, $redirect = true)
     {
         $resourcesPath = $this->resource(0);
 
         $key = $this->model->getKey();
+        return $this->redirectAfterSaving($resourcesPath, $key, $toast, $redirect);
 
-        return $this->redirectAfterSaving($resourcesPath, $key);
     }
 
     /**
@@ -604,11 +604,11 @@ class Form implements Renderable
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    protected function redirectAfterUpdate($key)
+    protected function redirectAfterUpdate($key, $toast, $redirect = true)
     {
         $resourcesPath = $this->resource(-1);
+        return $this->redirectAfterSaving($resourcesPath, $key, $toast, $redirect);
 
-        return $this->redirectAfterSaving($resourcesPath, $key);
     }
 
     /**
@@ -619,7 +619,7 @@ class Form implements Renderable
      *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    protected function redirectAfterSaving($resourcesPath, $key)
+    protected function redirectAfterSaving($resourcesPath, $key, $toast = true, $redirect = true)
     {
         if (request('after-save') == 1) {
             // continue editing
@@ -633,10 +633,12 @@ class Form implements Renderable
         } else {
             $url = request(Builder::PREVIOUS_URL_KEY) ?: $resourcesPath;
         }
-
-        admin_toastr(trans('admin.save_succeeded'));
-
-        return redirect($url);
+         if($toast == true) {
+            admin_toastr(trans('admin.save_succeeded'));
+        }
+        if($redirect == true) {
+            return redirect($url);
+        }
     }
 
     /**
