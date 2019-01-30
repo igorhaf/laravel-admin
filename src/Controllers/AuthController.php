@@ -8,7 +8,6 @@ use Encore\Admin\Layout\Content;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
@@ -38,10 +37,7 @@ class AuthController extends Controller
      */
     public function postLogin(Request $request)
     {
-        session(['language_id' => '5']);
-
         $credentials = $request->only([$this->username(), 'password']);
-        $remember = $request->get('remember', false);
 
         /** @var \Illuminate\Validation\Validator $validator */
         $validator = Validator::make($credentials, [
@@ -53,7 +49,7 @@ class AuthController extends Controller
             return back()->withInput()->withErrors($validator);
         }
 
-        if ($this->guard()->attempt($credentials, $remember)) {
+        if ($this->guard()->attempt($credentials)) {
             return $this->sendLoginResponse($request);
         }
 
